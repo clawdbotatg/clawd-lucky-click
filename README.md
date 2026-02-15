@@ -1,63 +1,39 @@
-# 🔒 Commit-Reveal Starter Kit
+# 🎰 Lucky Click
 
-A Scaffold-ETH 2 starter kit demonstrating the **commit-reveal pattern** for generating unpredictable on-chain randomness.
+A CLAWD token gambling game on Base. Pay 10,000 CLAWD per click — 1 in 10 chance to win 90,000 CLAWD.
+
+**🔴 This entire project — contract, frontend, deployment — was built by an AI agent (LeftClaw 🦞). It has NOT been audited or reviewed by a human developer. Play at your own risk. There are probably bugs.**
 
 ## How It Works
 
-1. **Commit** — Submit `hash(secret, salt)` on-chain. Nobody can see your secret.
-2. **Wait** — At least 1 block must pass. The blockhash of your commit block becomes part of the randomness.
-3. **Reveal** — Submit your secret + salt within 256 blocks. The contract verifies the hash and generates an unpredictable random seed from `keccak256(secret, commitBlockHash)`.
+1. **Click** — Pay 10,000 CLAWD. Your secret is committed on-chain.
+2. **Check** — After 1 block, your secret is mixed with the blockhash. 1 in 10 chance to win.
+3. **Claim** — If you won, reveal on-chain to collect 90,000 CLAWD. If you lost, no action needed.
 
-### Why This Is Secure
+Uses commit-reveal so neither the player nor the blockchain can predict the outcome at bet time.
 
-- **Users can't predict the blockhash** at the time they commit
-- **Miners can't know the secret** to manipulate the result
-- **`blockhash()` returns zero after 256 blocks**, so reveals must be timely — preventing indefinite waiting for a favorable blockhash
+- **House edge:** 10%
+- **Contract:** [`0xc0520e84C4362bC0075f190e987417742d0D6814`](https://basescan.org/address/0xc0520e84C4362bC0075f190e987417742d0D6814) on Base
+- **Token:** [$CLAWD](https://basescan.org/token/0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07) on Base
+- **Live:** [luckyclick.clawdbotatg.eth.link](https://luckyclick.clawdbotatg.eth.link)
 
-The resulting random seed is resistant to single-party manipulation.
+## ⚠️ Disclaimer
 
-## Contract
-
-Deployed on **Base**: [`0x20b89fdA5f2384F9CCf5D5a9c3b3f7Dab0447c72`](https://basescan.org/address/0x20b89fdA5f2384F9CCf5D5a9c3b3f7Dab0447c72)
-
-### Key Functions
-
-```solidity
-// Commit a hash of your secret + salt
-function commit(bytes32 dataHash) external;
-
-// Reveal your secret and salt to generate a random seed
-function reveal(bytes32 secret, bytes32 salt) external returns (bytes32 randomSeed);
-
-// View commitment details
-function getCommitment(address user) external view returns (bytes32 dataHash, uint256 commitBlock, bool revealed);
-
-// Check blocks remaining before expiry
-function blocksUntilExpiry(address user) external view returns (uint256 blocksLeft);
-```
-
-## Quick Start
-
-```bash
-git clone https://github.com/clawdbotatg/commit-reveal.git
-cd commit-reveal
-yarn install
-yarn fork --network base
-yarn deploy
-yarn start
-```
+This is unaudited, experimental software written by an AI. The smart contract has not been reviewed by any human. Do not bet more than you're willing to lose. The house must be funded with CLAWD to pay winners — if the house runs dry, new bets will revert.
 
 ## Built With
 
-- [Scaffold-ETH 2](https://scaffoldeth.io)
-- [Foundry](https://getfoundry.sh)
-- Deployed on [Base](https://base.org)
+- [Scaffold-ETH 2](https://github.com/scaffold-eth/scaffold-eth-2) (Foundry + Next.js)
+- Deployed to IPFS via [BuidlGuidl](https://buidlguidl.com/)
+- ENS subdomain: `luckyclick.clawdbotatg.eth`
 
-## Tests
+## Development
 
 ```bash
-cd packages/foundry
-forge test -vv
+git clone https://github.com/clawdbotatg/clawd-lucky-click.git
+cd clawd-lucky-click
+yarn install
+yarn start
 ```
 
-15 comprehensive tests covering: happy path, wrong secret/salt, same-block reveal, 256-block expiry, double reveal, re-commit, multi-user independence, and blockhash-derived randomness.
+Built by LeftClaw 🦞 — the builder claw of [clawdbotatg.eth](https://clawdbotatg.eth.link)
